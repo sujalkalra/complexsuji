@@ -9,10 +9,10 @@ export interface DeepseekResponse {
   suggestions: string[];
 }
 
-// Load environment variables (via Vite)
-const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
-const API_URL = import.meta.env.VITE_OPENROUTER_API_URL;
-const MODEL = import.meta.env.VITE_OPENROUTER_MODEL;
+// Load API keys from environment variables
+const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY as string;
+const API_URL = import.meta.env.VITE_OPENROUTER_API_URL as string;
+const MODEL = import.meta.env.VITE_OPENROUTER_MODEL as string;
 
 /**
  * Analyze code complexity using OpenRouter API with Deepcoder model
@@ -46,14 +46,14 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
     `;
 
     console.log("Sending request to OpenRouter API with Deepcoder model");
-    
+
     const response = await fetch(API_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${API_KEY}`,
-        "HTTP-Referer": window.location.origin, // Required by OpenRouter
-        "X-Title": "ComplexSuji" // Identifying app name for OpenRouter
+        "HTTP-Referer": window.location.origin,
+        "X-Title": "ComplexSuji"
       },
       body: JSON.stringify({
         model: MODEL,
@@ -75,65 +75,54 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
     }
 
     const result = await response.json();
-    console.log("API response:", result);  // Log the full response to check the structure
+    console.log("Full API Response:", result); // Log the full response to check the structure
 
-    // Safeguard: Check if the response contains valid content
-    const content = result?.choices?.[0]?.message?.content;
-    if (!content) {
-      console.error("Invalid response structure from API.");
+    // Check if the response contains 'choices' and ensure it's not empty
+    const choices = result?.choices;
+    if (!choices || choices.length === 0) {
+      console.error("API response doesn't contain 'choices' or it's empty:", result);
       toast.error("Failed to receive valid response from API.");
-      
       return generateFallbackResponse("Unable to retrieve analysis.");
     }
 
-    // Enhanced JSON parsing logic
+    const content = choices[0]?.message?.content;
+    if (!content) {
+      console.error("No valid content in 'choices[0].message':", choices[0]);
+      toast.error("Failed to retrieve content from API response.");
+      return generateFallbackResponse("Unable to retrieve content.");
+    }
+
     try {
-      // First attempt: Direct parsing
-      try {
-        const parsedResponse = JSON.parse(content);
-        return ensureValidResponse(parsedResponse);
-      } catch (e) {
-        console.log("Direct JSON parsing failed, trying to extract JSON from content");
-        
-        // Second attempt: Try to extract JSON from markdown or text
-        const jsonMatches = [
-          // Match JSON inside code blocks (markdown)
-          content.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/),
-          // Match plain JSON format with starting and ending braces
-          content.match(/(\{[\s\S]*\})/),
-          // Match JSON that might be split across multiple lines
-          content.match(/\{\s*"timeComplexity"[\s\S]*"suggestions"[\s\S]*\}/),
-        ];
-        
-        // Try each match pattern
-        for (const match of jsonMatches) {
-          if (match && match[1]) {
-            try {
-              const extractedJson = match[1];
-              console.log("Extracted JSON:", extractedJson);
-              const parsed = JSON.parse(extractedJson);
-              return ensureValidResponse(parsed);
-            } catch (err) {
-              console.log("Failed to parse extracted JSON, trying next pattern");
-              continue;
-            }
+      const parsedResponse = JSON.parse(content);
+      return ensureValidResponse(parsedResponse);
+    } catch (e) {
+      console.log("Direct JSON parsing failed, trying to extract JSON from content");
+
+      const jsonMatches = [
+        content.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/),
+        content.match(/(\{[\s\S]*\})/),
+        content.match(/\{\s*"timeComplexity"[\s\S]*"suggestions"[\s\S]*\}/),
+      ];
+
+      for (const match of jsonMatches) {
+        if (match && match[1]) {
+          try {
+            const extractedJson = match[1];
+            console.log("Extracted JSON:", extractedJson);
+            const parsed = JSON.parse(extractedJson);
+            return ensureValidResponse(parsed);
+          } catch (err) {
+            console.log("Failed to parse extracted JSON, trying next pattern");
+            continue;
           }
         }
-        
-        throw new Error("Could not extract valid JSON from response");
       }
-    } catch (error) {
-      console.error("Failed to parse API response:", content);
-      toast.error("Received invalid response format from AI service");
-      
-      // Create a fallback response based on the content
-      return generateFallbackResponse(content);
+
+      throw new Error("Could not extract valid JSON from response");
     }
   } catch (error) {
     console.error("Error analyzing code:", error);
     toast.error("Failed to analyze code: " + (error as Error).message);
-    
-    // Re-throw to let the component handle the error state
     throw error;
   }
 };
@@ -142,9 +131,8 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
  * Ensures the response has all required fields
  */
 function ensureValidResponse(response: any): DeepseekResponse {
-  // Check if all required fields exist
   const requiredFields = ['timeComplexity', 'timeExplanation', 'spaceComplexity', 'spaceExplanation', 'suggestions'];
-  
+
   for (const field of requiredFields) {
     if (!response[field]) {
       if (field === 'suggestions') {
@@ -154,12 +142,12 @@ function ensureValidResponse(response: any): DeepseekResponse {
       }
     }
   }
-  
+
   // Ensure suggestions is an array
   if (!Array.isArray(response.suggestions)) {
     response.suggestions = response.suggestions ? [response.suggestions.toString()] : [];
   }
-  
+
   return response as DeepseekResponse;
 }
 
@@ -167,10 +155,9 @@ function ensureValidResponse(response: any): DeepseekResponse {
  * Generates a fallback response when parsing fails
  */
 function generateFallbackResponse(content: string): DeepseekResponse {
-  // Try to extract at least some meaningful information from the content
   const timeMatch = content.match(/[oO]\s*\(\s*([^)]+)\s*\).*time|time.*[oO]\s*\(\s*([^)]+)\s*\)/i);
   const spaceMatch = content.match(/[oO]\s*\(\s*([^)]+)\s*\).*space|space.*[oO]\s*\(\s*([^)]+)\s*\)/i);
-  
+
   return {
     timeComplexity: timeMatch ? `O(${timeMatch[1] || timeMatch[2]})` : "Analysis failed",
     timeExplanation: "Failed to parse the time complexity analysis from the API response.",

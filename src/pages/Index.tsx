@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
@@ -8,14 +7,17 @@ import FeaturesSection from '@/components/FeaturesSection';
 import Footer from '@/components/Footer';
 import { toast } from 'sonner';
 import { analyzeCodeComplexity, DeepseekResponse } from '@/services/deepseekService';
+import { Loader2 } from 'lucide-react';
 
 const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [result, setResult] = useState<DeepseekResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  // This now calls the Deepseek API to analyze the code
+  // This now calls the OpenRouter API with Deepcoder model to analyze the code
   const handleAnalyzeCode = async (code: string) => {
     setIsAnalyzing(true);
+    setError(null);
     
     // Clear any previous results
     setResult(null);
@@ -25,7 +27,9 @@ const Index = () => {
       setResult(analysisResult);
       toast.success("Analysis completed successfully");
     } catch (error) {
-      toast.error("Failed to analyze code: " + (error as Error).message);
+      const errorMessage = (error as Error).message;
+      setError(errorMessage);
+      toast.error("Failed to analyze code: " + errorMessage);
     } finally {
       setIsAnalyzing(false);
     }
@@ -52,7 +56,24 @@ const Index = () => {
                   isAnalyzing={isAnalyzing} 
                 />
                 
-                {result && (
+                {isAnalyzing && (
+                  <div className="flex flex-col items-center justify-center py-8">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
+                    <p className="text-muted-foreground text-center">
+                      Analyzing code complexity with AI...
+                    </p>
+                  </div>
+                )}
+                
+                {error && !isAnalyzing && (
+                  <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+                    <h3 className="text-lg font-medium text-destructive mb-2">Analysis Error</h3>
+                    <p className="text-muted-foreground">{error}</p>
+                    <p className="text-sm mt-2">Please try again with a different code sample or check your network connection.</p>
+                  </div>
+                )}
+                
+                {result && !isAnalyzing && (
                   <ComplexityResult 
                     result={result} 
                     className="animate-fade-in"

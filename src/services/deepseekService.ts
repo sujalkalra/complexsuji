@@ -8,7 +8,7 @@ export interface DeepseekResponse {
   suggestions: string[];
 }
 
-// Load environment variables
+// Load from environment variables
 const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
 const API_URL = import.meta.env.VITE_OPENROUTER_API_URL;
 const MODEL = import.meta.env.VITE_OPENROUTER_MODEL;
@@ -55,46 +55,49 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
       })
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to analyze code");
+    const result = await response.json();
+    console.log("Raw API result:", result);
+
+    // Check if choices exist
+    if (!result.choices || !Array.isArray(result.choices) || result.choices.length === 0) {
+      throw new Error("API returned no choices. Check your API key, model name, or prompt length.");
     }
 
-    const result = await response.json();
-    const content = result.choices[0].message.content;
+    const content = result.choices[0].message?.content;
+    if (!content) {
+      throw new Error("Missing 'content' in the API response.");
+    }
 
+    // Try to parse the content
     try {
-      try {
-        return ensureValidResponse(JSON.parse(content));
-      } catch {
-        const jsonMatches = [
-          content.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/),
-          content.match(/(\{[\s\S]*\})/),
-          content.match(/\{\s*"timeComplexity"[\s\S]*"suggestions"[\s\S]*\}/)
-        ];
-
-        for (const match of jsonMatches) {
-          if (match && match[1]) {
-            return ensureValidResponse(JSON.parse(match[1]));
-          }
-        }
-
-        throw new Error("Could not extract valid JSON from response");
-      }
+      return ensureValidResponse(JSON.parse(content));
     } catch {
-      toast.error("Invalid response format from AI service");
-      return generateFallbackResponse(content);
+      const jsonMatches = [
+        content.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/),
+        content.match(/(\{[\s\S]*\})/),
+        content.match(/\{\s*"timeComplexity"[\s\S]*"suggestions"[\s\S]*\}/)
+      ];
+
+      for (const match of jsonMatches) {
+        if (match && match[1]) {
+          try {
+            return ensureValidResponse(JSON.parse(match[1]));
+          } catch {}
+        }
+      }
+
+      throw new Error("Could not extract valid JSON from response.");
     }
   } catch (error) {
+    const message = (error as Error).message || "Unknown error";
     console.error("Error analyzing code:", error);
-    toast.error("Failed to analyze code: " + (error as Error).message);
-    throw error;
+    toast.error(`Failed to analyze code: ${message}`);
+    return generateFallbackResponse("No usable response content.");
   }
 };
 
 function ensureValidResponse(response: any): DeepseekResponse {
   const requiredFields = ['timeComplexity', 'timeExplanation', 'spaceComplexity', 'spaceExplanation', 'suggestions'];
-
   for (const field of requiredFields) {
     if (!response[field]) {
       response[field] = field === 'suggestions' ? [] : "Not provided";

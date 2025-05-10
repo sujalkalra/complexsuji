@@ -8,13 +8,16 @@ export interface DeepseekResponse {
   suggestions: string[];
 }
 
-// Load from environment variables
+// Load environment variables (via Vite)
 const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
 const API_URL = import.meta.env.VITE_OPENROUTER_API_URL;
 const MODEL = import.meta.env.VITE_OPENROUTER_MODEL;
 
 export const analyzeCodeComplexity = async (code: string): Promise<DeepseekResponse> => {
   try {
+    console.log("Using model:", MODEL);
+    console.log("API URL:", API_URL);
+
     const prompt = `
       Analyze the following code and provide:
       1. Time complexity (Big O notation)
@@ -43,7 +46,7 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${API_KEY}`,
+        Authorization: `Bearer ${API_KEY}`,
         "HTTP-Referer": window.location.origin,
         "X-Title": "ComplexSuji"
       },
@@ -58,20 +61,24 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
     const result = await response.json();
     console.log("Raw API result:", result);
 
-    // Check if choices exist
     if (!result.choices || !Array.isArray(result.choices) || result.choices.length === 0) {
+      console.error("Missing 'choices' in response:", result);
       throw new Error("API returned no choices. Check your API key, model name, or prompt length.");
     }
 
     const content = result.choices[0].message?.content;
     if (!content) {
-      throw new Error("Missing 'content' in the API response.");
+      console.error("Missing 'message.content' in result:", result.choices[0]);
+      throw new Error("Missing content in API response.");
     }
 
-    // Try to parse the content
+    console.log("Raw model content:", content);
+
     try {
       return ensureValidResponse(JSON.parse(content));
-    } catch {
+    } catch (e) {
+      console.warn("Direct JSON parse failed. Trying fallback extraction...");
+
       const jsonMatches = [
         content.match(/```(?:json)?\s*(\{[\s\S]*?\})\s*```/),
         content.match(/(\{[\s\S]*\})/),
@@ -81,15 +88,21 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
       for (const match of jsonMatches) {
         if (match && match[1]) {
           try {
-            return ensureValidResponse(JSON.parse(match[1]));
-          } catch {}
+            const extracted = match[1];
+            console.log("Extracted fallback JSON:", extracted);
+            return ensureValidResponse(JSON.parse(extracted));
+          } catch {
+            console.warn("Failed to parse one fallback JSON pattern.");
+          }
         }
       }
 
-      throw new Error("Could not extract valid JSON from response.");
+      console.error("Could not parse valid JSON. Final fallback triggered.");
+      toast.error("AI response could not be parsed. Showing fallback result.");
+      return generateFallbackResponse(content);
     }
   } catch (error) {
-    const message = (error as Error).message || "Unknown error";
+    const message = (error as Error).message || "Unknown error occurred";
     console.error("Error analyzing code:", error);
     toast.error(`Failed to analyze code: ${message}`);
     return generateFallbackResponse("No usable response content.");
@@ -98,6 +111,7 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
 
 function ensureValidResponse(response: any): DeepseekResponse {
   const requiredFields = ['timeComplexity', 'timeExplanation', 'spaceComplexity', 'spaceExplanation', 'suggestions'];
+
   for (const field of requiredFields) {
     if (!response[field]) {
       response[field] = field === 'suggestions' ? [] : "Not provided";
@@ -117,9 +131,9 @@ function generateFallbackResponse(content: string): DeepseekResponse {
 
   return {
     timeComplexity: timeMatch ? `O(${timeMatch[1] || timeMatch[2]})` : "Analysis failed",
-    timeExplanation: "Failed to parse time complexity.",
+    timeExplanation: "Failed to parse the time complexity.",
     spaceComplexity: spaceMatch ? `O(${spaceMatch[1] || spaceMatch[2]})` : "Analysis failed",
-    spaceExplanation: "Failed to parse space complexity.",
+    spaceExplanation: "Failed to parse the space complexity.",
     suggestions: [
       "Try simplifying the code",
       "Ensure the code is syntactically valid",

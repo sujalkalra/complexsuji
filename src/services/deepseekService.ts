@@ -75,7 +75,7 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
     }
 
     const result = await response.json();
-    console.log("Full API Response:", result); // Log the full response to check the structure
+    console.log("Full API Response:", result); // Log the full response for debugging
 
     // Check if the response contains 'choices' and ensure it's not empty
     const choices = result?.choices;

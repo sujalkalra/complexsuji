@@ -7,38 +7,28 @@ import ComplexityResult from '@/components/ComplexityResult';
 import FeaturesSection from '@/components/FeaturesSection';
 import Footer from '@/components/Footer';
 import { toast } from 'sonner';
-
-// Mock data for demo
-const mockAnalysis = {
-  timeComplexity: "O(n)",
-  timeExplanation: "This function has a linear time complexity because it iterates through each element of the array exactly once. As the input size (array length) grows, the execution time increases proportionally.",
-  spaceComplexity: "O(1)",
-  spaceExplanation: "This function uses constant extra space regardless of input size. It only allocates memory for a single variable 'max' that stores the current maximum value.",
-  suggestions: [
-    "The algorithm is already optimal for finding the maximum value in an unsorted array.",
-    "If the array is very large, consider parallel processing techniques for improved performance.",
-    "For frequent operations on the same array, consider keeping track of the maximum during insertions instead of scanning the entire array each time."
-  ]
-};
+import { analyzeCodeComplexity, DeepseekResponse } from '@/services/deepseekService';
 
 const Index = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [result, setResult] = useState<typeof mockAnalysis | null>(null);
+  const [result, setResult] = useState<DeepseekResponse | null>(null);
 
-  // This would typically call an API endpoint to analyze the code
-  // For demo purposes, we're using a timeout to simulate API call
-  const handleAnalyzeCode = (code: string) => {
+  // This now calls the Deepseek API to analyze the code
+  const handleAnalyzeCode = async (code: string) => {
     setIsAnalyzing(true);
     
     // Clear any previous results
     setResult(null);
     
-    // Simulate API call with delay
-    setTimeout(() => {
-      setIsAnalyzing(false);
-      setResult(mockAnalysis);
+    try {
+      const analysisResult = await analyzeCodeComplexity(code);
+      setResult(analysisResult);
       toast.success("Analysis completed successfully");
-    }, 2000);
+    } catch (error) {
+      toast.error("Failed to analyze code: " + (error as Error).message);
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   return (

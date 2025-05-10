@@ -75,11 +75,17 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
     }
 
     const result = await response.json();
-    console.log("API response:", result);
-    
-    // Extract the content from the AI's response
-    const content = result.choices[0].message.content;
-    
+    console.log("API response:", result);  // Log the full response to check the structure
+
+    // Safeguard: Check if the response contains valid content
+    const content = result?.choices?.[0]?.message?.content;
+    if (!content) {
+      console.error("Invalid response structure from API.");
+      toast.error("Failed to receive valid response from API.");
+      
+      return generateFallbackResponse("Unable to retrieve analysis.");
+    }
+
     // Enhanced JSON parsing logic
     try {
       // First attempt: Direct parsing

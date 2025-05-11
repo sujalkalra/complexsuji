@@ -25,7 +25,7 @@ export default function Footer() {
             <h3 className="text-lg font-semibold">Connect</h3>
             <div className="mt-2 flex space-x-4">
               <a href="https://www.instagram.com/compilersuji" className="text-muted-foreground hover:text-foreground" aria-label="Instagram">
-                <Twitter className="h-5 w-5" />
+                <Instagram className="h-5 w-5" />
               </a>
               <a href="https://github.com/sujalkalra" className="text-muted-foreground hover:text-foreground" aria-label="GitHub">
                 <Github className="h-5 w-5" />

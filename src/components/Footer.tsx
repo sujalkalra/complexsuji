@@ -24,16 +24,16 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold">Connect</h3>
             <div className="mt-2 flex space-x-4">
-              <a href="#" className="text-muted-foreground hover:text-foreground" aria-label="Twitter">
+              <a href="https://www.instagram.com/compilersuji" className="text-muted-foreground hover:text-foreground" aria-label="Instagram">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground" aria-label="GitHub">
+              <a href="https://github.com/sujalkalra" className="text-muted-foreground hover:text-foreground" aria-label="GitHub">
                 <Github className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/in/sujal-kalra-660190252/" className="text-muted-foreground hover:text-foreground" aria-label="LinkedIn">
                 <Linkedin className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-foreground" aria-label="Email">
+              <a href="mailto:kalrasujal322@gmail.com" className="text-muted-foreground hover:text-foreground" aria-label="Email">
                 <Mail className="h-5 w-5" />
               </a>
             </div>

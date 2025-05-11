@@ -110,11 +110,11 @@ const Index = () => {
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="text-3xl font-bold mb-4">Get in Touch</h2>
               <p className="text-muted-foreground mb-6">
-                Have questions or feedback? We'd love to hear from you.
+                i would love to be a Tech friend of yours.
               </p>
               <div className="flex justify-center">
-                <a href="mailto:contact@complexsuji.com" className="text-primary hover:underline">
-                  contact@complexsuji.com
+                <a href="mailto:kalrasujal322@gmail.com" className="text-primary hover:underline">
+                  kalrasujal322@gmail.com
                 </a>
               </div>
             </div>

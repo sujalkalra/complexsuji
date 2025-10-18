@@ -1,0 +1,39 @@
+{
+	"name": "react-snippets",
+	"displayName": "React Snippets",
+	"description": "Code snippets for Reactjs development",
+	"version": "0.0.4",
+	"publisher": "danmce",
+	"icon": "images/react.png",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/danmce/react-snippets"
+	},
+	"engines": {
+		"vscode": "^1.27.0"
+	},
+	"categories": [
+		"Snippets"
+	],
+	"contributes": {
+		"snippets": [
+			{
+				"language": "javascript",
+				"path": "./snippets/snippets.json"
+			}
+		]
+	},
+	"__metadata": {
+		"id": "a95966a5-c297-4f20-90ea-eed78edce976",
+		"publisherId": "212a9e01-c871-4029-925f-3a68542d71a3",
+		"publisherDisplayName": "danmce",
+		"targetPlatform": "undefined",
+		"isApplicationScoped": false,
+		"isPreReleaseVersion": false,
+		"hasPreReleaseVersion": false,
+		"installedTimestamp": 1727812268384,
+		"pinned": false,
+		"preRelease": false,
+		"source": "gallery"
+	}
+}

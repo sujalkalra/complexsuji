@@ -1,0 +1,105 @@
+{
+	"name": "vscode-view-in-browser",
+	"displayName": "view-in-browser",
+	"description": "View html files in your default browser or specific browsers.",
+	"icon": "resource/icon.png",
+	"version": "1.0.5",
+	"publisher": "koppt",
+	"engines": {
+		"vscode": "^1.1.10"
+	},
+	"keywords": [
+		"vscode",
+		"view",
+		"browser",
+		"extension"
+	],
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:extension.viewInBrowser",
+		"onCommand:extension.viewInBrowserFromMenu",
+		"onCommand:extension.viewInSpecifyBrowser"
+	],
+	"main": "./out/src/extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "extension.viewInBrowser",
+				"title": "View In Browser"
+			},
+			{
+				"command": "extension.viewInBrowserFromMenu",
+				"title": "View In Default Browser"
+			},
+			{
+				"command": "extension.viewInSpecifyBrowser",
+				"title": "View In Other Browsers"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "View in browser configuration",
+			"properties": {
+				"view-in-browser.default": {
+					"type": "string",
+					"default": "",
+					"description": "Set default browser"
+				}
+			}
+		},
+		"menus": {
+			"editor/context": [
+				{
+					"when": "resourceLangId == html",
+					"command": "extension.viewInBrowser",
+					"group": "view-in-browser"
+				},
+				{
+					"when": "resourceLangId == html",
+					"command": "extension.viewInSpecifyBrowser",
+					"group": "view-in-browser"
+				}
+			],
+			"explorer/context": [
+				{
+					"when": "resourceLangId == html",
+					"command": "extension.viewInBrowser",
+					"group": "view-in-browser"
+				},
+				{
+					"when": "resourceLangId == html",
+					"command": "extension.viewInSpecifyBrowser",
+					"group": "view-in-browser"
+				}
+			]
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "tsc -p ./",
+		"compile": "tsc -watch -p ./",
+		"postinstall": "node ./node_modules/vscode/bin/install"
+	},
+	"devDependencies": {
+		"@types/node": "^8.5.2",
+		"eslint": "^4.14.0",
+		"eslint-plugin-typescript": "^0.8.1",
+		"typescript": "^2.6.2",
+		"typescript-eslint-parser": "^11.0.0",
+		"vscode": "^1.1.10"
+	},
+	"__metadata": {
+		"id": "23c8320f-712d-41a2-b30a-307edebd507f",
+		"publisherId": "b95eaeaf-3ede-44b9-83fa-28cf9c4c0c2e",
+		"publisherDisplayName": "Koppt Ho",
+		"targetPlatform": "undefined",
+		"isApplicationScoped": false,
+		"isPreReleaseVersion": false,
+		"hasPreReleaseVersion": false,
+		"installedTimestamp": 1727373267776,
+		"pinned": false,
+		"preRelease": false,
+		"source": "gallery"
+	}
+}

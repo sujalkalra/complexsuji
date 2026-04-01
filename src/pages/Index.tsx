@@ -5,6 +5,7 @@ import CodeEditor from '@/components/CodeEditor';
 import ComplexityResult from '@/components/ComplexityResult';
 import FeaturesSection from '@/components/FeaturesSection';
 import Footer from '@/components/Footer';
+import NerdyFacts from '@/components/NerdyFacts';
 import { toast } from 'sonner';
 import { analyzeCodeComplexity, DeepseekResponse } from '@/services/deepseekService';
 import { Loader2 } from 'lucide-react';
@@ -76,9 +77,13 @@ const Index = () => {
                 {result && !isAnalyzing && (
                   <ComplexityResult 
                     result={result} 
+                    code={result.code}
                     className="animate-fade-in"
                   />
                 )}
+              </div>
+              <div className="mt-8">
+                <NerdyFacts />
               </div>
             </div>
           </div>

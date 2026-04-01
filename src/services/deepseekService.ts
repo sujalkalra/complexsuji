@@ -2,6 +2,7 @@ import { toast } from "sonner";
 
 // Define the response type from API
 export interface DeepseekResponse {
+  code: string;
   timeComplexity: string;
   timeExplanation: string;
   spaceComplexity: string;
@@ -94,6 +95,7 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
 
     try {
       const parsedResponse = JSON.parse(content);
+      parsedResponse.code = code;
       return ensureValidResponse(parsedResponse);
     } catch (e) {
       console.log("Direct JSON parsing failed, trying to extract JSON from content");
@@ -110,6 +112,7 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
             const extractedJson = match[1];
             console.log("Extracted JSON:", extractedJson);
             const parsed = JSON.parse(extractedJson);
+            parsed.code = code;
             return ensureValidResponse(parsed);
           } catch (err) {
             console.log("Failed to parse extracted JSON, trying next pattern");
@@ -154,11 +157,12 @@ function ensureValidResponse(response: any): DeepseekResponse {
 /**
  * Generates a fallback response when parsing fails
  */
-function generateFallbackResponse(content: string): DeepseekResponse {
+function generateFallbackResponse(content: string, code: string = ""): DeepseekResponse {
   const timeMatch = content.match(/[oO]\s*\(\s*([^)]+)\s*\).*time|time.*[oO]\s*\(\s*([^)]+)\s*\)/i);
   const spaceMatch = content.match(/[oO]\s*\(\s*([^)]+)\s*\).*space|space.*[oO]\s*\(\s*([^)]+)\s*\)/i);
 
   return {
+    code,
     timeComplexity: timeMatch ? `O(${timeMatch[1] || timeMatch[2]})` : "Analysis failed",
     timeExplanation: "Failed to parse the time complexity analysis from the API response.",
     spaceComplexity: spaceMatch ? `O(${spaceMatch[1] || spaceMatch[2]})` : "Analysis failed",

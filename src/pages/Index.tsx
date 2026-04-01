@@ -6,6 +6,7 @@ import ComplexityResult from '@/components/ComplexityResult';
 import FeaturesSection from '@/components/FeaturesSection';
 import Footer from '@/components/Footer';
 import NerdyFacts from '@/components/NerdyFacts';
+import BigOCards from '@/components/BigOCards';
 import { toast } from 'sonner';
 import { analyzeCodeComplexity, DeepseekResponse } from '@/services/deepseekService';
 import { Loader2 } from 'lucide-react';
@@ -82,6 +83,13 @@ const Index = () => {
                   />
                 )}
               </div>
+
+              {result && !isAnalyzing && (
+                <div className="mt-16 mb-8 animate-fade-in">
+                  <BigOCards />
+                </div>
+              )}
+
               <div className="mt-8">
                 <NerdyFacts />
               </div>

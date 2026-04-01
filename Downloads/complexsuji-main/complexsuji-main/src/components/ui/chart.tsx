@@ -74,27 +74,35 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null
   }
 
+  const safeId = id.replace(/[^a-zA-Z0-9-]/g, "")
+
   return (
-    <style
-      dangerouslySetInnerHTML={{
-        __html: Object.entries(THEMES)
-          .map(
-            ([theme, prefix]) => `
-${prefix} [data-chart=${id}] {
+    <style>
+      {Object.entries(THEMES)
+        .map(([theme, prefix]) => {
+          return `
+${prefix} [data-chart="${safeId}"] {
 ${colorConfig
   .map(([key, itemConfig]) => {
     const color =
       itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
       itemConfig.color
-    return color ? `  --color-${key}: ${color};` : null
+    const safeKey = key.replace(/[^a-zA-Z0-9-]/g, "")
+    // Validate color to prevent CSS injection. Supports hex, rgb, rgba, hsl, var(), and named colors.
+    // Also supports modern space-separated and / alpha syntax.
+    const isSafeColor =
+      typeof color === "string" &&
+      (/^(#(?:[0-9a-fA-F]{3,4}){1,2}|(rgb|hsl)a?\([\d\s.,%/]+\)|[a-z-]+|var\(--[a-zA-Z0-9-]+\))$/i.test(
+        color
+      ))
+    return isSafeColor ? `  --color-${safeKey}: ${color};` : null
   })
   .join("\n")}
 }
 `
-          )
-          .join("\n"),
-      }}
-    />
+        })
+        .join("\n")}
+    </style>
   )
 }
 

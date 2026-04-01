@@ -9,6 +9,18 @@ export interface DeepseekResponse {
   suggestions: string[];
 }
 
+export interface OpenRouterResponse {
+  choices: Array<{
+    message: {
+      content: string | null;
+    };
+  }>;
+}
+
+export interface OpenRouterError {
+  message?: string;
+}
+
 // Load API keys from environment variables
 const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY as string;
 const API_URL = import.meta.env.VITE_OPENROUTER_API_URL as string;
@@ -69,16 +81,16 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
     });
 
     if (!response.ok) {
-      const error = await response.json();
+      const error = (await response.json()) as OpenRouterError;
       console.error("API error:", error);
       throw new Error(error.message || "Failed to analyze code");
     }
 
-    const result = await response.json();
+    const result = (await response.json()) as OpenRouterResponse;
     console.log("Full API Response:", result); // Log the full response for debugging
 
     // Check if the response contains 'choices' and ensure it's not empty
-    const choices = result?.choices;
+    const choices = result.choices;
     if (!choices || choices.length === 0) {
       console.error("API response doesn't contain 'choices' or it's empty:", result);
       toast.error("Failed to receive valid response from API.");
@@ -130,25 +142,24 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
 /**
  * Ensures the response has all required fields
  */
-function ensureValidResponse(response: any): DeepseekResponse {
-  const requiredFields = ['timeComplexity', 'timeExplanation', 'spaceComplexity', 'spaceExplanation', 'suggestions'];
+function ensureValidResponse(response: unknown): DeepseekResponse {
+  const data = (response && typeof response === 'object' ? response : {}) as Record<string, unknown>;
 
-  for (const field of requiredFields) {
-    if (!response[field]) {
-      if (field === 'suggestions') {
-        response[field] = [];
-      } else {
-        response[field] = "Not provided";
-      }
-    }
+  const result: DeepseekResponse = {
+    timeComplexity: String(data.timeComplexity || "Not provided"),
+    timeExplanation: String(data.timeExplanation || "Not provided"),
+    spaceComplexity: String(data.spaceComplexity || "Not provided"),
+    spaceExplanation: String(data.spaceExplanation || "Not provided"),
+    suggestions: []
+  };
+
+  if (Array.isArray(data.suggestions)) {
+    result.suggestions = data.suggestions.map(s => String(s));
+  } else if (data.suggestions) {
+    result.suggestions = [String(data.suggestions)];
   }
 
-  // Ensure suggestions is an array
-  if (!Array.isArray(response.suggestions)) {
-    response.suggestions = response.suggestions ? [response.suggestions.toString()] : [];
-  }
-
-  return response as DeepseekResponse;
+  return result;
 }
 
 /**

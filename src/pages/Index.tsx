@@ -46,8 +46,8 @@ const Index = () => {
         <section id="analyzer" className="py-16 scroll-mt-16">
           <div className="container">
             <div className="max-w-5xl mx-auto">
-              <h2 className="text-3xl font-bold mb-2 text-center">Analyze Your Code</h2>
-              <p className="text-center text-muted-foreground mb-8">
+              <h2 className="text-3xl font-bold mb-2 text-center font-mono tracking-tight text-primary">Analyze Your Code</h2>
+              <p className="text-center text-muted-foreground mb-8 font-mono text-sm">
                 Paste your code below and click "Analyze Complexity" or press Ctrl+Enter
               </p>
               
@@ -93,9 +93,9 @@ const Index = () => {
         
         <section id="about" className="py-16 bg-background">
           <div className="container">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-3xl font-bold mb-4">About ComplexSuji</h2>
-              <p className="text-muted-foreground mb-6">
+            <div className="max-w-3xl mx-auto text-center font-mono">
+              <h2 className="text-3xl font-bold mb-4 text-primary">About ComplexSuji</h2>
+              <p className="text-muted-foreground mb-6 leading-relaxed">
                 ComplexSuji is an advanced AI-powered code analysis tool designed to help developers 
                 understand the time and space complexity of their algorithms. Our state-of-the-art
                 AI engine analyzes your code and provides detailed insights to help you write more
@@ -110,12 +110,12 @@ const Index = () => {
           </div>
         </section>
         
-        <section id="contact" className="py-16 bg-secondary/50">
+        <section id="contact" className="py-16 bg-secondary/20">
           <div className="container">
-            <div className="max-w-3xl mx-auto text-center">
-              <h2 className="text-3xl font-bold mb-4">Get in Touch</h2>
+            <div className="max-w-3xl mx-auto text-center font-mono">
+              <h2 className="text-3xl font-bold mb-4 text-primary">Get in Touch</h2>
               <p className="text-muted-foreground mb-6">
-                i would love to be a Tech friend of yours.
+                I would love to be a Tech friend of yours.
               </p>
               <div className="flex justify-center">
                 <a href="mailto:kalrasujal322@gmail.com" className="text-primary hover:underline">

@@ -118,7 +118,7 @@ export default function ComplexityResult({ result, code, className }: Complexity
       </div>
 
       {/* Graph Visualization */}
-      <ComplexityChart predictedComplexity={result.timeComplexity} />
+      <ComplexityChart timeComplexity={result.timeComplexity} spaceComplexity={result.spaceComplexity} />
 
       {/* Optimization Suggestions */}
       {result.suggestions && result.suggestions.length > 0 && (

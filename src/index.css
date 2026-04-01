@@ -1,5 +1,4 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,71 +6,78 @@
 
 @layer base {
   :root {
-    --background: 220 25% 98%;
-    --foreground: 222 47% 11%;
+    /* "Monkeytype" inspired dark theme by default, using HSL for Tailwind */
+    /* Deep dark gray background */
+    --background: 216 12% 16%;
+    /* Soft text foreground */
+    --foreground: 0 0% 80%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    /* Slightly lighter for cards */
+    --card: 216 12% 18%;
+    --card-foreground: 0 0% 80%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: 216 12% 18%;
+    --popover-foreground: 0 0% 80%;
 
-    --primary: 221 83% 53%;
-    --primary-foreground: 210 40% 98%;
+    /* The classic Monkeytype yellow accent */
+    --primary: 43 100% 50%;
+    --primary-foreground: 216 12% 16%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 47% 11%;
+    /* Subdued secondary for non-primary actions */
+    --secondary: 216 12% 24%;
+    --secondary-foreground: 0 0% 80%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215 16% 47%;
+    /* Muted text for subtle hints */
+    --muted: 216 12% 20%;
+    --muted-foreground: 216 5% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222 47% 11%;
+    --accent: 216 12% 24%;
+    --accent-foreground: 43 100% 50%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 221 83% 53%;
+    --border: 216 12% 24%;
+    --input: 216 12% 24%;
+    --ring: 43 100% 50%;
 
     --radius: 0.5rem;
 
-    --code: 220 13% 91%;
-    --code-foreground: 222 47% 11%;
+    --code: 216 12% 14%;
+    --code-foreground: 43 100% 50%;
   }
 
   .dark {
-    --background: 222 47% 11%;
-    --foreground: 210 40% 98%;
+    --background: 216 12% 16%;
+    --foreground: 0 0% 80%;
 
-    --card: 222 47% 11%;
-    --card-foreground: 210 40% 98%;
+    --card: 216 12% 18%;
+    --card-foreground: 0 0% 80%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 216 12% 18%;
+    --popover-foreground: 0 0% 80%;
 
-    --primary: 217 91% 60%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 43 100% 50%;
+    --primary-foreground: 216 12% 16%;
 
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 216 12% 24%;
+    --secondary-foreground: 0 0% 80%;
 
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 216 12% 20%;
+    --muted-foreground: 216 5% 45%;
 
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 216 12% 24%;
+    --accent-foreground: 43 100% 50%;
 
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 224 76% 48%;
+    --border: 216 12% 24%;
+    --input: 216 12% 24%;
+    --ring: 43 100% 50%;
 
-    --code: 217 33% 17%;
-    --code-foreground: 210 40% 98%;
+    --code: 216 12% 14%;
+    --code-foreground: 43 100% 50%;
   }
 }
 
@@ -81,22 +87,22 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-mono antialiased;
   }
 
   .glass {
-    @apply backdrop-blur-lg bg-white/10 border border-white/20 dark:border-white/10;
+    @apply backdrop-blur-lg bg-card/80 border border-white/5;
   }
-  
+
   .code-container {
     @apply font-mono text-sm p-0;
   }
-  
+
   .code-container .cm-editor {
-    @apply bg-code text-code-foreground rounded-md;
+    @apply bg-code text-foreground rounded-md;
   }
-  
+
   .analysis-card {
-    @apply bg-gradient-to-br from-card to-accent/50;
+    @apply bg-card border-border;
   }
 }

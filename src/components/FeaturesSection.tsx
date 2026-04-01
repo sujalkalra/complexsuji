@@ -5,10 +5,10 @@ import { Button } from "./ui/button";
 
 export default function FeaturesSection() {
   return (
-    <section id="features" className="py-16 bg-secondary/50">
-      <div className="container">
+    <section id="features" className="py-16 bg-secondary/20">
+      <div className="container font-mono">
         <div className="text-center max-w-2xl mx-auto mb-12">
-          <h2 className="text-3xl font-bold mb-4">Powerful Features</h2>
+          <h2 className="text-3xl font-bold mb-4 text-primary">Powerful Features</h2>
           <p className="text-muted-foreground">
             ComplexSuji helps developers understand and optimize their code with these powerful features
           </p>
@@ -61,15 +61,15 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <Card className="border-border/40 h-full">
+    <Card className="border-border/40 h-full bg-card hover:bg-card/80 transition-colors">
       <CardHeader className="pb-2">
-        <div className="p-2 w-fit rounded-md bg-primary/10 text-primary mb-2">
+        <div className="p-2 w-fit rounded-md bg-primary/10 text-primary mb-2 border border-primary/20">
           {icon}
         </div>
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="tracking-tight">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <CardDescription className="text-base">
+        <CardDescription className="text-base leading-relaxed">
           {description}
         </CardDescription>
       </CardContent>

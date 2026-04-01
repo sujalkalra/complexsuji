@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { InlineMath } from "react-katex"; // ✅ added
 import "katex/dist/katex.min.css"; // ✅ added
-import ComplexityChart from "./ComplexityChart";
 
 interface ComplexityResultProps {
   result: {
@@ -116,9 +115,6 @@ export default function ComplexityResult({ result, code, className }: Complexity
           </CardContent>
         </Card>
       </div>
-
-      {/* Graph Visualization */}
-      <ComplexityChart timeComplexity={result.timeComplexity} spaceComplexity={result.spaceComplexity} />
 
       {/* Optimization Suggestions */}
       {result.suggestions && result.suggestions.length > 0 && (

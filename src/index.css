@@ -9,6 +9,7 @@
     /* "Monkeytype" inspired dark theme by default, using HSL for Tailwind */
     /* Deep dark gray background */
     --background: 216 12% 16%;
+
     /* Soft text foreground */
     --foreground: 0 0% 80%;
 
@@ -49,6 +50,7 @@
 
   .dark {
     --background: 216 12% 16%;
+
     --foreground: 0 0% 80%;
 
     --card: 216 12% 18%;
@@ -101,6 +103,7 @@
   .code-container .cm-editor {
     @apply bg-code text-foreground rounded-md;
   }
+
 
   .analysis-card {
     @apply bg-card border-border;

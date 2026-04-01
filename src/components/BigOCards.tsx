@@ -132,6 +132,7 @@ export default function BigOCards() {
             transition={{ delay: index * 0.1, duration: 0.3 }}
           >
             <Card
+
               className="cursor-pointer hover:border-primary/50 transition-colors h-full flex flex-col items-center justify-center p-6 text-center"
               onClick={() => setSelectedNotation(data)}
             >
@@ -169,6 +170,7 @@ export default function BigOCards() {
                     </h3>
                   </div>
                   <button
+
                     onClick={() => setSelectedNotation(null)}
                     className="p-1 rounded-full hover:bg-muted transition-colors text-muted-foreground"
                   >
@@ -181,6 +183,7 @@ export default function BigOCards() {
                     <h4 className="text-sm font-semibold text-primary uppercase tracking-wider mb-2">Description</h4>
                     <p className="text-muted-foreground">{selectedNotation.description}</p>
                   </div>
+
 
                   <div>
                     <h4 className="text-sm font-semibold text-primary uppercase tracking-wider mb-2">Why?</h4>

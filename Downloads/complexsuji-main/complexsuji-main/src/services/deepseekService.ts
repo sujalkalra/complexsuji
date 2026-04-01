@@ -130,7 +130,7 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
 /**
  * Ensures the response has all required fields
  */
-function ensureValidResponse(response: any): DeepseekResponse {
+export function ensureValidResponse(response: any): DeepseekResponse {
   const requiredFields = ['timeComplexity', 'timeExplanation', 'spaceComplexity', 'spaceExplanation', 'suggestions'];
 
   for (const field of requiredFields) {

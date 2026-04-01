@@ -3,6 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/
 import { InlineMath } from 'react-katex';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import CodeMirror from '@uiw/react-codemirror';
+import { python } from '@codemirror/lang-python';
+import { oneDark } from '@codemirror/theme-one-dark';
 
 const bigOData = [
   {
@@ -10,104 +13,95 @@ const bigOData = [
     name: "Constant Time",
     description: "Executes in the same amount of time regardless of the input size.",
     reasoning: "The algorithm only requires a single operation (or a fixed number of operations) to complete. There are no loops that depend on the size of the input.",
-    code: `// Finding an element at a specific index
-function getFirstElement(arr) {
-  return arr[0]; // Always takes 1 step
-}`
+    code: `# Finding an element at a specific index
+def get_first_element(arr):
+    return arr[0] # Always takes 1 step`
   },
   {
     notation: "O(\\log n)",
     name: "Logarithmic Time",
     description: "Execution time increases logarithmically as the input size grows.",
     reasoning: "The algorithm repeatedly divides the problem size in half. Instead of checking every element, it discards half of the remaining elements at each step.",
-    code: `// Binary Search
-function binarySearch(arr, target) {
-  let left = 0;
-  let right = arr.length - 1;
-  while (left <= right) {
-    let mid = Math.floor((left + right) / 2);
-    if (arr[mid] === target) return mid;
-    else if (arr[mid] < target) left = mid + 1;
-    else right = mid - 1;
-  }
-  return -1;
-}`
+    code: `# Binary Search
+def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    while left <= right:
+        mid = (left + right) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1`
   },
   {
     notation: "O(n)",
     name: "Linear Time",
     description: "Execution time grows proportionally with the input size.",
     reasoning: "The algorithm must visit every element in the input exactly once (or a constant number of times).",
-    code: `// Finding the maximum value
-function findMax(arr) {
-  let max = arr[0];
-  for (let i = 1; i < arr.length; i++) {
-    if (arr[i] > max) max = arr[i];
-  }
-  return max;
-}`
+    code: `# Finding the maximum value
+def find_max(arr):
+    max_val = arr[0]
+    for i in range(1, len(arr)):
+        if arr[i] > max_val:
+            max_val = arr[i]
+    return max_val`
   },
   {
     notation: "O(n \\log n)",
     name: "Linearithmic Time",
     description: "Execution time grows proportionally to n times the logarithm of n.",
     reasoning: "Often found in efficient sorting algorithms. The algorithm divides the problem into smaller pieces (log n) and then merges or processes each piece (n).",
-    code: `// Merge Sort (or Quick Sort on average)
-function mergeSort(arr) {
-  if (arr.length <= 1) return arr;
-  const mid = Math.floor(arr.length / 2);
-  const left = mergeSort(arr.slice(0, mid));
-  const right = mergeSort(arr.slice(mid));
-  return merge(left, right); // merge takes O(n)
-}`
+    code: `# Merge Sort
+def merge_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    mid = len(arr) // 2
+    left = merge_sort(arr[:mid])
+    right = merge_sort(arr[mid:])
+    return merge(left, right) # merge takes O(n)`
   },
   {
     notation: "O(n^2)",
     name: "Quadratic Time",
     description: "Execution time grows proportionally to the square of the input size.",
     reasoning: "The algorithm contains nested loops, where for every element in the input, it iterates through the input again.",
-    code: `// Bubble Sort
-function bubbleSort(arr) {
-  for (let i = 0; i < arr.length; i++) {
-    for (let j = 0; j < arr.length - i - 1; j++) {
-      if (arr[j] > arr[j + 1]) {
-        let temp = arr[j];
-        arr[j] = arr[j + 1];
-        arr[j + 1] = temp;
-      }
-    }
-  }
-  return arr;
-}`
+    code: `# Bubble Sort
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if arr[j] > arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+    return arr`
   },
   {
     notation: "O(2^n)",
     name: "Exponential Time",
     description: "Execution time doubles with each addition to the input dataset.",
     reasoning: "Often found in brute-force algorithms or recursive algorithms that solve a problem of size n by recursively solving two smaller problems of size n-1.",
-    code: `// Recursive Fibonacci
-function fibonacci(n) {
-  if (n <= 1) return n;
-  return fibonacci(n - 1) + fibonacci(n - 2);
-}`
+    code: `# Recursive Fibonacci
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)`
   },
   {
     notation: "O(n!)",
     name: "Factorial Time",
     description: "Execution time grows proportionally to the factorial of the input size.",
     reasoning: "The algorithm calculates all possible permutations of the input dataset. This is extremely slow and unfeasible for even relatively small inputs.",
-    code: `// Generating all permutations
-function getPermutations(arr) {
-  if (arr.length === 0) return [[]];
-  const result = [];
-  for (let i = 0; i < arr.length; i++) {
-    const rest = getPermutations(arr.slice(0, i).concat(arr.slice(i + 1)));
-    for (let j = 0; j < rest.length; j++) {
-      result.push([arr[i]].concat(rest[j]));
-    }
-  }
-  return result;
-}`
+    code: `# Generating all permutations
+def get_permutations(arr):
+    if len(arr) == 0:
+        return [[]]
+    result = []
+    for i in range(len(arr)):
+        rest = get_permutations(arr[:i] + arr[i+1:])
+        for p in rest:
+            result.append([arr[i]] + p)
+    return result`
   }
 ];
 
@@ -192,11 +186,21 @@ export default function BigOCards() {
 
                   <div>
                     <h4 className="text-sm font-semibold text-primary uppercase tracking-wider mb-2">Code Example</h4>
-                    <pre className="bg-muted p-4 rounded-lg overflow-x-auto">
-                      <code className="text-sm font-mono text-foreground">
-                        {selectedNotation.code}
-                      </code>
-                    </pre>
+                    <div className="rounded-lg overflow-hidden border border-border">
+                      <CodeMirror
+                        value={selectedNotation.code}
+                        extensions={[python()]}
+                        theme={oneDark}
+                        editable={false}
+                        readOnly={true}
+                        basicSetup={{
+                          lineNumbers: true,
+                          highlightActiveLineGutter: false,
+                          highlightActiveLine: false,
+                          foldGutter: false
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

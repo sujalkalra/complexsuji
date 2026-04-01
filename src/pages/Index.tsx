@@ -85,11 +85,9 @@ const Index = () => {
               </div>
 
 
-              {result && !isAnalyzing && (
-                <div className="mt-16 mb-8 animate-fade-in">
-                  <BigOCards />
-                </div>
-              )}
+              <div className="mt-16 mb-8 animate-fade-in">
+                <BigOCards />
+              </div>
 
 
               <div className="mt-8">

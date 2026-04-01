@@ -16,14 +16,14 @@ export default function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5" />
 
       <div className="container relative z-10">
-        <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
+        <div className="flex flex-col items-center text-center max-w-3xl mx-auto font-mono">
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6 border border-primary/20">
             <Code className="h-4 w-4" />
             <span className="text-sm font-medium">AI-Powered Complexity Analysis</span>
           </div>
 
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-            Understand Your Code's <span className="text-primary">Efficiency</span> in Seconds
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight tracking-tight">
+            Understand Your Code's <span className="text-primary underline decoration-dashed underline-offset-8">Efficiency</span> in Seconds
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl">

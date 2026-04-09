@@ -70,9 +70,16 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      console.error("API error:", error);
-      throw new Error(error.message || "Failed to analyze code");
+      let errorMsg = `API returned status ${response.status}`;
+      try {
+        const errorText = await response.text();
+        const errorJson = JSON.parse(errorText);
+        errorMsg = errorJson?.error?.message || errorJson?.message || errorMsg;
+      } catch {
+        // response wasn't JSON — use status code message
+      }
+      console.error("API error:", errorMsg);
+      throw new Error(errorMsg);
     }
 
     const result = await response.json();

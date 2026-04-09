@@ -153,7 +153,16 @@ export default function ComplexityResult({ result, code, className }: Complexity
         </CardHeader>
         <CardContent className="pt-6">
           {hasFeedbackSubmitted ? (
-            <p className="text-sm text-green-600 font-medium">Thank you for your feedback! This helps us improve.</p>
+            <div className="flex flex-col items-center justify-center space-y-4 py-4 text-center">
+              <img
+                src="https://media.giphy.com/media/11sBLVxNs7v6WA/giphy.gif"
+                alt="Applause GIF"
+                className="rounded-lg shadow-md max-w-[200px] h-auto object-cover"
+              />
+              <p className="text-base text-primary font-medium px-4">
+                Thank you and applause that you somehow contributing to make AI smart!
+              </p>
+            </div>
           ) : (
             <div className="flex flex-col sm:flex-row gap-4">
               <Button

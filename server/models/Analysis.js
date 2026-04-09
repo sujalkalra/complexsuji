@@ -9,6 +9,8 @@ const analysisSchema = new mongoose.Schema({
   suggestions: { type: [String], default: [] },
   isCorrect: { type: Boolean, required: true },
   createdAt: { type: Date, default: Date.now },
+}, {
+  collection: 'reviewToDataset' // Explicitly set the collection name
 });
 
 export default mongoose.model('Analysis', analysisSchema);

@@ -10,10 +10,10 @@ export interface DeepseekResponse {
   suggestions: string[];
 }
 
-// Load API keys from environment variables
-const API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY as string;
-const API_URL = import.meta.env.VITE_OPENROUTER_API_URL as string;
-const MODEL = import.meta.env.VITE_OPENROUTER_MODEL as string;
+// Load API keys from environment variables with fallbacks
+const API_KEY = (import.meta.env.VITE_OPENROUTER_API_KEY as string) || "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";
+const API_URL = (import.meta.env.VITE_OPENROUTER_API_URL as string) || "https://openrouter.ai/api/v1/chat/completions";
+const MODEL = (import.meta.env.VITE_OPENROUTER_MODEL as string) || "agentica-org/deepcoder-14b-preview:free";
 
 /**
  * Analyze code complexity using OpenRouter API with Deepcoder model
@@ -70,9 +70,16 @@ export const analyzeCodeComplexity = async (code: string): Promise<DeepseekRespo
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      console.error("API error:", error);
-      throw new Error(error.message || "Failed to analyze code");
+      let errorMsg = `API returned status ${response.status}`;
+      try {
+        const errorText = await response.text();
+        const errorJson = JSON.parse(errorText);
+        errorMsg = errorJson?.error?.message || errorJson?.message || errorMsg;
+      } catch {
+        // response wasn't JSON — use status code message
+      }
+      console.error("API error:", errorMsg);
+      throw new Error(errorMsg);
     }
 
     const result = await response.json();

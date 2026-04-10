@@ -96,12 +96,12 @@
     @apply backdrop-blur-lg bg-card/80 border border-white/5;
   }
 
-  .code-container {
-    @apply font-mono text-sm p-0;
+  .cm-editor {
+    font-family: 'JetBrains Mono', monospace !important;
   }
 
-  .code-container .cm-editor {
-    @apply bg-code text-foreground rounded-md;
+  .cm-editor .cm-scroller {
+    font-family: 'JetBrains Mono', monospace !important;
   }
 
 

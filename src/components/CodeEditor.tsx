@@ -49,10 +49,13 @@ const jetbrainsDarcula = createTheme({
 });
 
 // Sample code for initial state
-const sampleCode = `// Finding an element at a specific index
-function getFirstElement(arr) {
-  return arr[0]; // Always takes 1 step
-}`;
+const sampleCode = `class Solution:
+    def fib(self, n: int) -> int:
+        if n == 0:
+            return 0
+        if n == 1:
+            return 1
+        return self.fib(n-1)+self.fib(n-2)`;
 
 interface CodeEditorProps {
   onAnalyze: (code: string) => void;

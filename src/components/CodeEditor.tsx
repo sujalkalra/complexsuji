@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { EditorView } from '@codemirror/view';
@@ -8,60 +8,51 @@ import { createTheme } from '@uiw/codemirror-themes';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
-import { Code, Play } from 'lucide-react';
+import { Play } from 'lucide-react';
 
 // JetBrains Darcula-inspired theme
 const jetbrainsDarcula = createTheme({
   theme: 'dark',
   settings: {
-    background: '#1e1e1e',
-    foreground: '#a9b7c6',
-    caret: '#ffffff',
-    selection: '#214283',
-    selectionMatch: '#32593d',
-    lineHighlight: '#2c2c2c',
-    gutterBackground: '#1e1e1e',
-    gutterForeground: '#606366',
-    gutterBorder: 'transparent',
+    background: 'hsl(var(--editor-bg))',
+    foreground: 'hsl(var(--editor-foreground))',
+    caret: 'hsl(var(--editor-caret))',
+    selection: 'hsl(var(--editor-selection))',
+    selectionMatch: 'hsl(var(--editor-selection-match))',
+    lineHighlight: 'hsl(var(--editor-line-highlight))',
+    gutterBackground: 'hsl(var(--editor-bg))',
+    gutterForeground: 'hsl(var(--editor-gutter-foreground))',
+    gutterBorder: 'hsl(var(--editor-border))',
   },
   styles: [
-    { tag: t.comment, color: '#808080', fontStyle: 'italic' },
-    { tag: t.lineComment, color: '#808080', fontStyle: 'italic' },
-    { tag: t.blockComment, color: '#808080', fontStyle: 'italic' },
-    { tag: [t.string, t.special(t.brace)], color: '#6a8759' },
-    { tag: t.number, color: '#6897bb' },
-    { tag: t.bool, color: '#cc7832', fontWeight: 'bold' },
-    { tag: t.null, color: '#cc7832', fontWeight: 'bold' },
-    { tag: [t.keyword, t.operator], color: '#cc7832' },
-    { tag: [t.definitionKeyword, t.moduleKeyword], color: '#cc7832' },
-    { tag: t.variableName, color: '#a9b7c6' },
-    { tag: [t.definition(t.variableName)], color: '#ffc66d' },
-    { tag: t.function(t.variableName), color: '#ffc66d' },
-    { tag: [t.className, t.typeName], color: '#a9b7c6', fontWeight: 'bold' },
-    { tag: [t.propertyName], color: '#9876aa' },
-    { tag: [t.regexp], color: '#6a8759' },
-    { tag: [t.tagName], color: '#e8bf6a' },
-    { tag: [t.attributeName], color: '#bababa' },
-    { tag: [t.meta], color: '#bbb529' },
-    { tag: t.bracket, color: '#a9b7c6' },
-    { tag: t.punctuation, color: '#cc7832' },
+    { tag: t.comment, color: 'hsl(var(--editor-comment))', fontStyle: 'italic' },
+    { tag: t.lineComment, color: 'hsl(var(--editor-comment))', fontStyle: 'italic' },
+    { tag: t.blockComment, color: 'hsl(var(--editor-comment))', fontStyle: 'italic' },
+    { tag: [t.string, t.special(t.brace)], color: 'hsl(var(--editor-string))' },
+    { tag: t.number, color: 'hsl(var(--editor-number))' },
+    { tag: t.bool, color: 'hsl(var(--editor-keyword))', fontWeight: 'bold' },
+    { tag: t.null, color: 'hsl(var(--editor-keyword))', fontWeight: 'bold' },
+    { tag: [t.keyword, t.operator], color: 'hsl(var(--editor-keyword))' },
+    { tag: [t.definitionKeyword, t.moduleKeyword], color: 'hsl(var(--editor-keyword))' },
+    { tag: t.variableName, color: 'hsl(var(--editor-foreground))' },
+    { tag: [t.definition(t.variableName)], color: 'hsl(var(--editor-function))' },
+    { tag: t.function(t.variableName), color: 'hsl(var(--editor-function))' },
+    { tag: [t.className, t.typeName], color: 'hsl(var(--editor-foreground))', fontWeight: 'bold' },
+    { tag: [t.propertyName], color: 'hsl(var(--editor-property))' },
+    { tag: [t.regexp], color: 'hsl(var(--editor-string))' },
+    { tag: [t.tagName], color: 'hsl(var(--editor-tag))' },
+    { tag: [t.attributeName], color: 'hsl(var(--editor-foreground))' },
+    { tag: [t.meta], color: 'hsl(var(--editor-meta))' },
+    { tag: t.bracket, color: 'hsl(var(--editor-foreground))' },
+    { tag: t.punctuation, color: 'hsl(var(--editor-keyword))' },
   ],
 });
 
 // Sample code for initial state
-const sampleCode = `function findMax(arr) {
-  let max = arr[0];
-  for (let i = 1; i < arr.length; i++) {
-    if (arr[i] > max) {
-      max = arr[i];
-    }
-  }
-  return max;
-}
-
-// Find maximum element in array
-const result = findMax([3, 7, 2, 9, 1, 5]);
-`;
+const sampleCode = `// Finding an element at a specific index
+function getFirstElement(arr) {
+  return arr[0]; // Always takes 1 step
+}`;
 
 interface CodeEditorProps {
   onAnalyze: (code: string) => void;
@@ -96,31 +87,58 @@ export default function CodeEditor({ onAnalyze, isAnalyzing, className }: CodeEd
   };
 
   return (
-    <div className={cn("rounded-lg overflow-hidden shadow-xl", className)} style={{ border: '1px solid #3c3f41' }}>
-      {/* Title bar - JetBrains style */}
-      <div className="flex justify-between items-center px-4 py-2" style={{ background: '#3c3f41', borderBottom: '1px solid #515151' }}>
-        <div className="flex items-center gap-2">
-          <Code className="h-4 w-4" style={{ color: '#afb1b3' }} />
-          <span className="text-sm font-medium" style={{ color: '#bbbbbb', fontFamily: 'JetBrains Mono, monospace' }}>main.js</span>
+    <div className={cn("space-y-4", className)}>
+      <div className="flex items-end justify-between gap-4">
+        <div className="space-y-1">
+          <p className="text-xs font-semibold uppercase tracking-[0.42em] text-primary">Code Example</p>
+          <p className="text-xs text-muted-foreground">Paste your code and run the analyzer.</p>
         </div>
-        <div className="text-xs" style={{ color: '#6e7073' }}>Ctrl+Enter to analyze</div>
+        <div className="hidden text-xs text-muted-foreground sm:block">Ctrl+Enter</div>
       </div>
 
-      {/* Editor area */}
-      <div onKeyDown={handleKeyDown as any} style={{ background: '#1e1e1e' }}>
+      <div className="overflow-hidden rounded-2xl border border-border/60 bg-code shadow-2xl">
+        <div onKeyDown={handleKeyDown as any} className="jetbrains-editor">
         <CodeMirror
+          className="jetbrains-editor"
           value={code}
-          height="400px"
+          height="340px"
           extensions={[
             javascript({ jsx: true }),
             EditorView.theme({
-              '&': { fontSize: '14px', fontFamily: 'JetBrains Mono, monospace' },
-              '.cm-gutters': { borderRight: '1px solid #313335', minWidth: '48px' },
-              '.cm-activeLineGutter': { backgroundColor: '#2c2c2c' },
-              '.cm-cursor': { borderLeftColor: '#ffffff', borderLeftWidth: '2px' },
-              '.cm-matchingBracket': { backgroundColor: '#3b514d', outline: 'none' },
-              '.cm-selectionMatch': { backgroundColor: '#32593d' },
-              '.cm-foldGutter': { color: '#606366' },
+              '&': {
+                fontSize: '15px',
+                fontFamily: 'JetBrains Mono, monospace',
+                backgroundColor: 'hsl(var(--editor-bg))',
+              },
+              '.cm-content': { padding: '1rem 0' },
+              '.cm-scroller': { fontFamily: 'JetBrains Mono, monospace', lineHeight: '1.75' },
+              '.cm-line': { paddingLeft: '0.5rem' },
+              '.cm-gutters': {
+                borderRight: '1px solid hsl(var(--editor-border))',
+                minWidth: '3rem',
+              },
+              '.cm-activeLineGutter': {
+                backgroundColor: 'hsl(var(--editor-line-highlight))',
+                color: 'hsl(var(--editor-foreground))',
+              },
+              '.cm-activeLine': { backgroundColor: 'hsl(var(--editor-line-highlight))' },
+              '.cm-cursor': {
+                borderLeftColor: 'hsl(var(--editor-caret))',
+                borderLeftWidth: '2px',
+              },
+              '.cm-matchingBracket': {
+                backgroundColor: 'hsl(var(--editor-selection-match))',
+                color: 'hsl(var(--editor-foreground))',
+                outline: 'none',
+                borderRadius: '0.25rem',
+              },
+              '.cm-selectionMatch': { backgroundColor: 'hsl(var(--editor-selection-match))' },
+              '.cm-foldGutter': { color: 'hsl(var(--editor-gutter-foreground))' },
+              '.cm-tooltip': {
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
+                color: 'hsl(var(--foreground))',
+              },
             }),
           ]}
           onChange={handleChange}
@@ -136,22 +154,17 @@ export default function CodeEditor({ onAnalyze, isAnalyzing, className }: CodeEd
             indentOnInput: true,
           }}
         />
+        </div>
       </div>
 
-      {/* Bottom bar */}
-      <div className="px-4 py-3 flex justify-between items-center" style={{ background: '#3c3f41', borderTop: '1px solid #515151' }}>
-        <span className="text-xs" style={{ color: '#6e7073' }}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <span className="text-xs text-muted-foreground">
           {code.split('\n').length} lines
         </span>
         <Button
           onClick={handleAnalyzeClick}
           disabled={isAnalyzing}
-          className="relative overflow-hidden gap-2 font-mono text-sm"
-          style={{
-            background: isAnalyzing ? '#365880' : '#365880',
-            color: '#ffffff',
-            border: 'none',
-          }}
+          className="min-w-[11rem] gap-2 rounded-full border border-primary/20 bg-primary px-6 font-mono text-sm text-primary-foreground shadow-[0_14px_32px_-18px_hsl(var(--primary)/0.9)] hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/85 focus-visible:ring-primary/40 disabled:border-primary/10 disabled:bg-primary/70"
         >
           {isAnalyzing ? (
             <span className="animate-pulse">Analyzing...</span>

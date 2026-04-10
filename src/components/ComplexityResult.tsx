@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Clock, HardDrive, Lightbulb, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Check, Clock, HardDrive, Lightbulb, Loader2, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "./ui/card";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
@@ -22,6 +22,7 @@ interface ComplexityResultProps {
 export default function ComplexityResult({ result, code, className }: ComplexityResultProps) {
   const [hasFeedbackSubmitted, setHasFeedbackSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pendingFeedback, setPendingFeedback] = useState<boolean | null>(null);
 
   if (!result) return null;
 
@@ -33,9 +34,12 @@ export default function ComplexityResult({ result, code, className }: Complexity
   };
 
   const handleFeedback = async (isCorrect: boolean) => {
+    if (isSubmitting || hasFeedbackSubmitted) return;
+
+    setPendingFeedback(isCorrect);
     setIsSubmitting(true);
     try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
+      const baseUrl = import.meta.env.VITE_API_BASE_URL?.trim() || "";
       const response = await fetch(`${baseUrl}/api/analysis/feedback`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -50,15 +54,24 @@ export default function ComplexityResult({ result, code, className }: Complexity
         }),
       });
 
+      const contentType = response.headers.get("content-type") ?? "";
+      const isJson = contentType.includes("application/json");
+      const payload = isJson ? await response.json().catch(() => null) : null;
+
       if (!response.ok) {
-        throw new Error("Failed to submit feedback");
+        throw new Error(payload?.error || payload?.message || "Failed to submit feedback");
+      }
+
+      if (!isJson) {
+        throw new Error("Feedback backend is not connected yet.");
       }
 
       setHasFeedbackSubmitted(true);
       toast.success("Thank you for your feedback!");
     } catch (error) {
       console.error(error);
-      toast.error("Failed to submit feedback. Please try again.");
+      setPendingFeedback(null);
+      toast.error((error as Error).message || "Failed to submit feedback. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -158,21 +171,39 @@ export default function ComplexityResult({ result, code, className }: Complexity
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
                 variant="outline"
-                className="flex-1 flex items-center justify-center gap-2 border-green-500 text-green-600 hover:bg-green-50 dark:hover:bg-green-950"
+                className="flex-1 items-center justify-center gap-2 rounded-xl border-primary/25 bg-card text-primary hover:bg-primary/10 hover:text-primary active:bg-primary/15 active:text-primary focus-visible:ring-primary/40 disabled:border-primary/25 disabled:bg-card disabled:text-primary"
                 onClick={() => handleFeedback(true)}
                 disabled={isSubmitting}
               >
-                <ThumbsUp className="h-4 w-4" />
-                Yes, I think it's correct
+                {isSubmitting && pendingFeedback === true ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <ThumbsUp className="h-4 w-4" />
+                    Yes, I think it's correct
+                  </>
+                )}
               </Button>
               <Button
                 variant="outline"
-                className="flex-1 flex items-center justify-center gap-2 border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+                className="flex-1 items-center justify-center gap-2 rounded-xl border-destructive/30 bg-card text-destructive hover:bg-destructive/10 hover:text-destructive active:bg-destructive/15 active:text-destructive focus-visible:ring-destructive/40 disabled:border-destructive/30 disabled:bg-card disabled:text-destructive"
                 onClick={() => handleFeedback(false)}
                 disabled={isSubmitting}
               >
-                <ThumbsDown className="h-4 w-4" />
-                No, I don't think so
+                {isSubmitting && pendingFeedback === false ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  <>
+                    <ThumbsDown className="h-4 w-4" />
+                    No, I don't think so
+                  </>
+                )}
               </Button>
             </div>
           )}

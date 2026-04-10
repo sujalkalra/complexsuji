@@ -46,6 +46,23 @@
 
     --code: 216 12% 14%;
     --code-foreground: 43 100% 50%;
+
+    --editor-bg: 0 0% 6%;
+    --editor-border: 220 10% 20%;
+    --editor-foreground: 214 22% 78%;
+    --editor-caret: 0 0% 100%;
+    --editor-gutter-foreground: 220 7% 43%;
+    --editor-selection: 218 58% 29%;
+    --editor-selection-match: 158 19% 25%;
+    --editor-line-highlight: 220 12% 14%;
+    --editor-comment: 220 6% 50%;
+    --editor-string: 107 24% 45%;
+    --editor-number: 206 39% 57%;
+    --editor-keyword: 24 58% 50%;
+    --editor-function: 39 100% 71%;
+    --editor-property: 272 28% 56%;
+    --editor-tag: 42 71% 67%;
+    --editor-meta: 58 53% 45%;
   }
 
   .dark {
@@ -80,6 +97,23 @@
 
     --code: 216 12% 14%;
     --code-foreground: 43 100% 50%;
+
+    --editor-bg: 0 0% 6%;
+    --editor-border: 220 10% 20%;
+    --editor-foreground: 214 22% 78%;
+    --editor-caret: 0 0% 100%;
+    --editor-gutter-foreground: 220 7% 43%;
+    --editor-selection: 218 58% 29%;
+    --editor-selection-match: 158 19% 25%;
+    --editor-line-highlight: 220 12% 14%;
+    --editor-comment: 220 6% 50%;
+    --editor-string: 107 24% 45%;
+    --editor-number: 206 39% 57%;
+    --editor-keyword: 24 58% 50%;
+    --editor-function: 39 100% 71%;
+    --editor-property: 272 28% 56%;
+    --editor-tag: 42 71% 67%;
+    --editor-meta: 58 53% 45%;
   }
 }
 
@@ -102,6 +136,24 @@
 
   .cm-editor .cm-scroller {
     font-family: 'JetBrains Mono', monospace !important;
+  }
+
+  .jetbrains-editor .cm-editor,
+  .jetbrains-editor .cm-gutters {
+    background: hsl(var(--editor-bg)) !important;
+  }
+
+  .jetbrains-editor .cm-editor {
+    color: hsl(var(--editor-foreground));
+  }
+
+  .jetbrains-editor .cm-focused {
+    outline: none !important;
+  }
+
+  .jetbrains-editor .cm-selectionBackground,
+  .jetbrains-editor .cm-selectionLayer .cm-selectionBackground {
+    background: hsl(var(--editor-selection)) !important;
   }
 
 
